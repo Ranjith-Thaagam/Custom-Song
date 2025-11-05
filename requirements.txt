@@ -8,9 +8,15 @@ numpy
 pypinyin==0.53.0
 pytorch_lightning==2.5.1
 soundfile==0.13.1
-torch
-torchaudio
-torchvision
+
+#if you have not a GPU run this below 
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+#else
+#torch
+#torchaudio
+#torchvision
+
 tqdm
 transformers==4.50.0
 py3langid==0.3.0
@@ -24,3 +30,10 @@ click
 peft
 tensorboard
 tensorboardX
+
+#add requirements based support other lang
+indic-nlp-library
+openphonemizer
+datasets
+transformers
+pandas

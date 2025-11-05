@@ -6,6 +6,11 @@ files_name=[
     f'{dir}/models/encoder.py',
     f'{dir}/models/decoder.py',
     f'{dir}/laguage/LangSegment.py',
+    f'{dir}/laguage/language_filters.py',
+
+    f'{dir}/preprocessing/data_loader.py',
+    f'{dir}/preprocessing/preprocess.py'
+
 ]
 
 for files in files_name:
