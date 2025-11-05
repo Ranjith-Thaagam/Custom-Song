@@ -19,10 +19,13 @@ __pycache__/
 # Dataset
 data/
 dataset/
-*.mp3
+
 *prompt.txt
 *_lyrics.txt
 *lyric.txt
+*.json
+*.mp3
+*.arrow
 
 # C extensions
 *.so
