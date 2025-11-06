@@ -23,9 +23,8 @@ dataset/
 *prompt.txt
 *_lyrics.txt
 *lyric.txt
-*.json
 *.mp3
-*.arrow
+
 
 # C extensions
 *.so

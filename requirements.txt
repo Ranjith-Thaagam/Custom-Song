@@ -10,7 +10,7 @@ pytorch_lightning==2.5.1
 soundfile==0.13.1
 
 #if you have not a GPU run this below 
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+#pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 #else
 #torch
