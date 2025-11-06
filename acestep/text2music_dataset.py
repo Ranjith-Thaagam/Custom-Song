@@ -57,6 +57,7 @@ SUPPORT_LANGUAGES = {
     "hu": 5753,
     "ko": 6152,
     "hi": 6680,
+    "ta": 6681,  # Added Tamil language support
 }
 
 # Regex pattern for structure markers like [Verse], [Chorus], etc.
@@ -304,21 +305,16 @@ class Text2MusicDataset(Dataset):
                     if structure_pattern.match(line):
                         token_idx = self.lyric_tokenizer.encode(line, "en")
                     else:
-                        # Try tokenizing with most common language first
-                        token_idx = self.lyric_tokenizer.encode(line, most_common_lang)
+                        # Use English for Tamil since tokenizer doesn't support Tamil
+                        if most_common_lang == "ta" or lang == "ta":
+                            token_idx = self.lyric_tokenizer.encode(line, "en")
+                        else:
+                            # Try tokenizing with most common language first
+                            token_idx = self.lyric_tokenizer.encode(line, most_common_lang)
 
-                        # If debug mode, show tokenization results
-                        if debug:
-                            toks = self.lyric_tokenizer.batch_decode(
-                                [[tok_id] for tok_id in token_idx]
-                            )
-                            logger.info(
-                                f"debug using most_common_lang {line} --> {most_common_lang} --> {toks}"
-                            )
-
-                        # If tokenization contains unknown token (1), try with segment language
-                        if 1 in token_idx:
-                            token_idx = self.lyric_tokenizer.encode(line, lang)
+                            # If tokenization contains unknown token (1), try with segment language
+                            if 1 in token_idx and lang != "ta":
+                                token_idx = self.lyric_tokenizer.encode(line, lang)
 
                     if debug:
                         toks = self.lyric_tokenizer.batch_decode(
@@ -398,10 +394,19 @@ class Text2MusicDataset(Dataset):
         filename = item["filename"]
         sr = 48000
         try:
-            audio, sr = torchaudio.load(filename)
+            # Use librosa as primary loader (more reliable)
+            import librosa
+            audio_np, sr = librosa.load(filename, sr=48000, mono=False)
+            if audio_np.ndim == 1:
+                audio_np = audio_np[None, :]
+            audio = torch.from_numpy(audio_np).float()
         except Exception as e:
-            logger.error(f"Failed to load audio {item}: {e}")
-            return None
+            try:
+                # Fallback to torchaudio
+                audio, sr = torchaudio.load(filename)
+            except Exception as e2:
+                logger.error(f"Failed to load audio {filename}: {e}, {e2}")
+                return None
 
         if audio is None:
             logger.error(f"Failed to load audio {item}")
@@ -498,8 +503,8 @@ class Text2MusicDataset(Dataset):
                 }
             )
 
-        # Limit audio length
-        longest_length = 24 * 10 * 48000  # 240 seconds
+        # Limit audio length to 30 seconds to save memory
+        longest_length = 30 * 48000  # 30 seconds instead of 240
         music_wavs = music_wavs[:, :longest_length]
         vocal_wavs = torch.zeros_like(music_wavs)
         wav_len = music_wavs.shape[-1]

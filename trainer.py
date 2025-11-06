@@ -775,15 +775,8 @@ class Pipeline(LightningModule):
         return lyrics
 
     def plot_step(self, batch, batch_idx):
-        global_step = self.global_step
-        if (
-            global_step % self.hparams.every_plot_step != 0
-            or self.local_rank != 0
-            or torch.distributed.get_rank() != 0
-            or torch.cuda.current_device() != 0
-        ):
-            return
-        results = self.predict_step(batch)
+        # Skip evaluation to save memory
+        return
 
         target_wavs = results["target_wavs"]
         pred_wavs = results["pred_wavs"]

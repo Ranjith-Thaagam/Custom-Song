@@ -75,6 +75,7 @@ SUPPORT_LANGUAGES = {
     "hu": 5753,
     "ko": 6152,
     "hi": 6680,
+    "ta": 6681,  # Added Tamil language support
 }
 
 structure_pattern = re.compile(r"\[.*?\]")
