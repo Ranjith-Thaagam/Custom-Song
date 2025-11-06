@@ -37,3 +37,4 @@ openphonemizer
 datasets
 transformers
 pandas
+aksharamukha

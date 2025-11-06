@@ -37,15 +37,11 @@ def create_dataset(data_dir="./data", repeat_count=2000, output_name="ta_hf_data
                 lyrics = f.read().strip()
 
             # --- Step 1: normalize ---
-            lang = detect_language(lyrics)
-            if lang != 'en':
-                normalized = normalize_text(lyrics, lang=lang)
-            else:
-                normalized = lyrics    
-  
+
+            normalized = normalize_text(lyrics)
+
             # --- Step 2: convert to phonemes ---
-            phonemized=None
-            #phonemized = preprocess_transcript(normalized)
+            phonemized = preprocess_transcript(normalized)
 
             example = {
                 "keys": song_path.stem,

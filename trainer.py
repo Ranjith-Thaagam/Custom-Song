@@ -343,7 +343,6 @@ class Pipeline(LightningModule):
         attention_mask = torch.ones(
             bs, target_latents.shape[-1], device=device, dtype=dtype
         )
-
         speaker_embds = batch["speaker_embs"].to(dtype)
         keys = batch["keys"]
         lyric_token_ids = batch["lyric_token_ids"]
