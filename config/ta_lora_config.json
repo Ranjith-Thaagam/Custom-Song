@@ -1,13 +1,13 @@
 {
-  "train_dataset": "./data/ta_hf_dataset",
-  "lr": 2e-4,
-  "r": 64,
-  "lora_alpha": 64,
-  "lora_dropout": 0.05,
-  "batch_size": 2,
-  "max_steps": 500,
-  "save_steps": 100,
-  "lang": "ta",
-  "target_modules": ["to_q", "to_k", "to_v", "to_out.0"],
-  "mixed_precision": "bf16"
+    "r": 8,
+    "lora_alpha": 16,
+    "target_modules": [
+        "linear_q",
+        "linear_k",
+        "linear_v",
+        "to_q",
+        "to_k",
+        "to_v",
+        "to_out.0"
+    ]
 }

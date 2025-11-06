@@ -32,6 +32,7 @@ matplotlib.use("Agg")
 torch.backends.cudnn.benchmark = False
 torch.set_float32_matmul_precision("high")
 
+print("torch version:", torch.__version__)
 
 class Pipeline(LightningModule):
     def __init__(
@@ -62,14 +63,14 @@ class Pipeline(LightningModule):
 
         # Initialize scheduler
         self.scheduler = self.get_scheduler()
-
+        print("scheduler loaded")
         # step 1: load model
         acestep_pipeline = ACEStepPipeline(checkpoint_dir)
         acestep_pipeline.load_checkpoint(acestep_pipeline.checkpoint_dir)
-
+        print("model loaded")
         transformers = acestep_pipeline.ace_step_transformer.float().cpu()
         transformers.enable_gradient_checkpointing()
-
+        print("transformers loaded")
         assert lora_config_path is not None, "Please provide a LoRA config path"
         if lora_config_path is not None:
             try:
@@ -82,9 +83,9 @@ class Pipeline(LightningModule):
             lora_config = LoraConfig(**lora_config)
             transformers.add_adapter(adapter_config=lora_config, adapter_name=adapter_name)
             self.adapter_name = adapter_name
-
+        
         self.transformers = transformers
-
+        print("transformers loaded")
         self.dcae = acestep_pipeline.music_dcae.float().cpu()
         self.dcae.requires_grad_(False)
 
@@ -829,11 +830,13 @@ def main(args):
         adapter_name=args.exp_name,
         lora_config_path=args.lora_config_path
     )
+    print("model name : ",model.transformers.lora_config)
     checkpoint_callback = ModelCheckpoint(
         monitor=None,
         every_n_train_steps=args.every_n_train_steps,
         save_top_k=-1,
     )
+    print("checkpoint_dir", args.checkpoint_dir)
     # add datetime str to version
     logger_callback = TensorBoardLogger(
         version=datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + args.exp_name,

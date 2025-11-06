@@ -17,9 +17,9 @@ __pycache__/
 *$py.class
 
 # Dataset
+
 data/
 dataset/
-
 *prompt.txt
 *_lyrics.txt
 *lyric.txt
