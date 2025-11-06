@@ -428,7 +428,7 @@ class ACEStepPipeline:
             actual_seeds.append(current_seed_for_generator)
         return random_generators, actual_seeds
 
-    def get_lang(self, text):
+    def get_lang(self, text,lang=None):
         language = "en"
         try:
             _ = self.lang_segment.getTexts(text)

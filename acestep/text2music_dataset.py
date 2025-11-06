@@ -650,7 +650,7 @@ class Text2MusicDataset(Dataset):
 
         return output
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx,lang=None):
         """
         Get item at index with error handling
 
