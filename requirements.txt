@@ -13,9 +13,9 @@ soundfile==0.13.1
 #pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 #else
-#torch
-#torchaudio
-#torchvision
+torch
+torchaudio
+torchvision
 
 tqdm
 transformers==4.50.0
@@ -38,3 +38,4 @@ datasets
 transformers
 pandas
 aksharamukha
+torchcodec

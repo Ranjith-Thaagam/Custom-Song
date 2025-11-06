@@ -181,20 +181,19 @@ class ACEStepPipeline:
 
     def load_checkpoint(self, checkpoint_dir=None, export_quantized_weights=False):
         checkpoint_dir = self.get_checkpoint_path(checkpoint_dir, REPO_ID)
-        print("checkpoint_dir", checkpoint_dir)
+      
         dcae_checkpoint_path = os.path.join(checkpoint_dir, "music_dcae_f8c8")
-        print("dcae_checkpoint_path", dcae_checkpoint_path)
+       
         vocoder_checkpoint_path = os.path.join(checkpoint_dir, "music_vocoder")
-        print("vocoder_checkpoint_path", vocoder_checkpoint_path)
-        ace_step_checkpoint_path = os.path.join(checkpoint_dir, "ace_step_transformer")
-        print("ace_step_checkpoint_path", ace_step_checkpoint_path)
-        text_encoder_checkpoint_path = os.path.join(checkpoint_dir, "umt5-base")
-        print("text_encoder_checkpoint_path", text_encoder_checkpoint_path)
 
+        ace_step_checkpoint_path = os.path.join(checkpoint_dir, "ace_step_transformer")
+
+        text_encoder_checkpoint_path = os.path.join(checkpoint_dir, "umt5-base")
+       
         self.ace_step_transformer = ACEStepTransformer2DModel.from_pretrained(
             ace_step_checkpoint_path, torch_dtype=self.dtype
         )
-        print("self.ace_step_transformer", self.ace_step_transformer)
+
         # self.ace_step_transformer.to(self.device).eval().to(self.dtype)
         if self.cpu_offload:
             self.ace_step_transformer = (

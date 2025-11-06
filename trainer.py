@@ -829,25 +829,24 @@ def main(args):
         adapter_name=args.exp_name,
         lora_config_path=args.lora_config_path
     )
-    print("model name : ",model.transformers.lora_config)
     checkpoint_callback = ModelCheckpoint(
         monitor=None,
         every_n_train_steps=args.every_n_train_steps,
         save_top_k=-1,
     )
-    print("checkpoint_dir", args.checkpoint_dir)
     # add datetime str to version
     logger_callback = TensorBoardLogger(
         version=datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + args.exp_name,
         save_dir=args.logger_dir,
     )
+    print("Model training...")
     trainer = Trainer(
         accelerator="gpu",
         devices=args.devices,
         num_nodes=args.num_nodes,
         precision=args.precision,
         accumulate_grad_batches=args.accumulate_grad_batches,
-        strategy="ddp_find_unused_parameters_true",
+        strategy="auto",  #"ddp_spawn" or "ddp_find_unused_parameters_true",
         max_epochs=args.epochs,
         max_steps=args.max_steps,
         log_every_n_steps=1,
@@ -859,6 +858,7 @@ def main(args):
         val_check_interval=args.val_check_interval,
     )
 
+    print("model try to fit")
     trainer.fit(
         model,
         ckpt_path=args.ckpt_path,
