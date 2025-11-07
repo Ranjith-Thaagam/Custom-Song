@@ -21,10 +21,11 @@ from pathlib import Path
 def create_dataset(data_dir="./data", repeat_count=2000, output_name="ta_hf_dataset"):
     data_path = Path(data_dir)
     all_examples = []
-
-    for song_path in data_path.glob("*.mp3"):
-        prompt_path = str(song_path).replace(".mp3", "_prompt.txt")
-        lyric_path = str(song_path).replace(".mp3", "_lyric.txt")
+    i=0
+    for song_path in data_path.glob("*.wav"):
+        
+        prompt_path = str(song_path).replace(".wav", "_prompt.txt")
+        lyric_path = str(song_path).replace(".wav", "_lyric.txt")
 
         try:
             assert os.path.exists(prompt_path), f"Prompt file {prompt_path} missing."
@@ -52,6 +53,7 @@ def create_dataset(data_dir="./data", repeat_count=2000, output_name="ta_hf_data
                 "recaption": {}
             }
             all_examples.append(example)
+          
 
         except AssertionError as e:
             print(f"Skipping file: {e}")

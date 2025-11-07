@@ -58,6 +58,7 @@ SUPPORT_LANGUAGES = {
     "hu": 5753,
     "ko": 6152,
     "hi": 6680,
+    "ta":7000,
 }
 
 # Regex pattern for structure markers like [Verse], [Chorus], etc.

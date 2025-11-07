@@ -13,7 +13,11 @@ from spacy.lang.en import English
 from spacy.lang.es import Spanish
 from spacy.lang.ja import Japanese
 from spacy.lang.zh import Chinese
+from spacy.lang.ta import Tamil
 from tokenizers import Tokenizer
+
+#add tamil num2words
+from .ta_num2words import TextNorm as ta_num2words
 
 from .zh_num2words import TextNorm as zh_num2words
 from typing import Dict, List, Optional, Set, Union
@@ -29,6 +33,10 @@ def get_spacy_lang(lang):
         return Arabic()
     elif lang == "es":
         return Spanish()
+    
+    #add tamil lang
+    elif lang == "ta":
+        return Tamil()
     else:
         # For most languages, Enlish does the job
         return English()
@@ -233,6 +241,18 @@ _abbreviations = {
     ],
 }
 
+#Add Tamil Abbreviations
+_abbreviations["ta"] = [
+    (re.compile(r"\bdr\.", re.IGNORECASE), "டாக்டர்"),
+    (re.compile(r"\bmr\.", re.IGNORECASE), "திரு"),
+    (re.compile(r"\bmrs\.", re.IGNORECASE), "திருமதி"),
+    (re.compile(r"\bms\.", re.IGNORECASE), "செல்வி"),
+    (re.compile(r"\bprof\.", re.IGNORECASE), "பேராசிரியர்"),
+    (re.compile(r"\bst\.", re.IGNORECASE), "புனிதர்"),
+    (re.compile(r"\brev\.", re.IGNORECASE), "மதகுரு"),
+    (re.compile(r"\bco\.", re.IGNORECASE), "நிறுவனம்"),
+    (re.compile(r"\bltd\.", re.IGNORECASE), "லிமிடெட்"),
+]
 
 def expand_abbreviations_multilingual(text, lang="en"):
     for regex, replacement in _abbreviations[lang]:
@@ -429,6 +449,20 @@ _symbols_multilingual = {
     ],
 }
 
+# add _symbols_multilingual for tamil
+_symbols_multilingual["ta"] = [
+    (re.compile(r"%s" % re.escape(x[0]), re.IGNORECASE), x[1])
+    for x in [
+        ("&", " மற்றும் "),
+        ("@", " இல் "),           # or "அட்" if you want phonetic style
+        ("%", " சதவீதம் "),
+        ("#", " ஹாஷ் "),
+        ("$", " டாலர் "),
+        ("£", " பவுண்ட் "),
+        ("°", " டிகிரி "),
+    ]
+]
+ 
 
 def expand_symbols_multilingual(text, lang="en"):
     for regex, replacement in _symbols_multilingual[lang]:
@@ -455,12 +489,22 @@ _ordinal_re = {
     "hu": re.compile(r"([0-9]+)(\.|adik|edik|odik|edik|ödik|ödike|ik)"),
     "ko": re.compile(r"([0-9]+)(번째|번|차|째)"),
 }
+
+#add tamil regex in _original_re
+
+_ordinal_re['ta']=re.compile(r"([0-9]+)(ஆம்)")
+
+
 _number_re = re.compile(r"[0-9]+")
 _currency_re = {
     "USD": re.compile(r"((\$[0-9\.\,]*[0-9]+)|([0-9\.\,]*[0-9]+\$))"),
     "GBP": re.compile(r"((£[0-9\.\,]*[0-9]+)|([0-9\.\,]*[0-9]+£))"),
     "EUR": re.compile(r"(([0-9\.\,]*[0-9]+€)|((€[0-9\.\,]*[0-9]+)))"),
 }
+
+#add tamil currency
+_currency_re["INR"] = re.compile(r"((₹[0-9\.\,]*[0-9]+)|([0-9\.\,]*[0-9]+₹))")
+
 
 _comma_number_re = re.compile(r"\b\d{1,3}(,\d{3})*(\.\d+)?\b")
 _dot_number_re = re.compile(r"\b\d{1,3}(.\d{3})*(\,\d+)?\b")
@@ -507,6 +551,7 @@ def _expand_currency(m, lang="en", currency="USD"):
         "tr": ", ",
         "hu": ", ",
         "ko": ", ",
+        "ta": ", ",
     }
 
     if amount.is_integer():
@@ -527,7 +572,10 @@ def _expand_number(m, lang="en"):
 
 def expand_numbers_multilingual(text, lang="en"):
     if lang == "zh":
-        text = zh_num2words()(text)
+        text = zh_num2words()(text) 
+
+    elif lang =='ta':
+        text = ta_num2words()(text)
     else:
         if lang in ["en", "ru"]:
             text = re.sub(_comma_number_re, _remove_commas, text)
