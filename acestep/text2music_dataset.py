@@ -12,6 +12,7 @@ import re
 from acestep.language_segmentation import LangSegment
 from acestep.models.lyrics_utils.lyric_tokenizer import VoiceBpeTokenizer
 import warnings
+import librosa
 
 warnings.simplefilter("ignore", category=FutureWarning)
 
@@ -268,7 +269,7 @@ class Text2MusicDataset(Dataset):
 
         # Detect language
         lang, langs, lang_counter = self.get_lang(lyrics)
-
+        
         # Determine most common language
         most_common_lang = "en"
         if len(lang_counter) > 0:
@@ -283,7 +284,7 @@ class Text2MusicDataset(Dataset):
         for lang_seg in langs:
             lang = lang_seg["lang"]
             text = lang_seg["text"]
-
+            print("The lyric lang is " , lang)
             # Normalize language codes
             if lang not in SUPPORT_LANGUAGES:
                 lang = "en"
@@ -385,7 +386,7 @@ class Text2MusicDataset(Dataset):
             pass
         return data
 
-    def get_audio(self, item):
+    def get_audio(self, item ):
         """
         Load and preprocess audio file
 
@@ -400,8 +401,13 @@ class Text2MusicDataset(Dataset):
         try:
             audio, sr = torchaudio.load(filename)
         except Exception as e:
-            logger.error(f"Failed to load audio {item}: {e}")
-            return None
+            logger.error(f"Failed to load audio {item}: {e} ,switched to librosa module")
+            audio_np , sr = librosa.load(filename, sr = 48000 , mono=True)
+     
+            if audio_np.ndim ==1:
+                audio_np = audio_np[None,:]
+            audio = torch.from_numpy(audio_np).float()
+            
 
         if audio is None:
             logger.error(f"Failed to load audio {item}")
@@ -499,7 +505,7 @@ class Text2MusicDataset(Dataset):
             )
 
         # Limit audio length
-        longest_length = 24 * 10 * 48000  # 240 seconds
+        longest_length = 24 * 10 * 48000  # 240 seconds (4 mins)
         music_wavs = music_wavs[:, :longest_length]
         vocal_wavs = torch.zeros_like(music_wavs)
         wav_len = music_wavs.shape[-1]
